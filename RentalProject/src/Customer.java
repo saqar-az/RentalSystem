@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -6,7 +5,7 @@ import java.util.Scanner;
 public class Customer {
     private String name, email, address, id;
     private int phone;
-    List<Movie> rentalMovies = new ArrayList<Movie>();
+    List<Item> rentalItems = new ArrayList<Item>();
     List<Rental> rentals = new ArrayList<Rental>();
 
     Customer(String name, String email, int phone, String address, String id) {
@@ -15,10 +14,10 @@ public class Customer {
         this.email = email;
         this.phone = phone;
         this.address = address;
-        if (!Movie.moviesIdCheck.contains(id) && !Movie.rentalsIdCheck.contains(id) && !Movie.customersIdCheck.contains(id)) {
+        if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
             let = false;
             this.id = id;
-            Movie.customersIdCheck.add(id);
+            Item.customersIdCheck.add(id);
         } else {
             System.out.println("This ID has already been taken");
             let = true;
@@ -27,9 +26,9 @@ public class Customer {
             System.out.print("Enter another ID : ");
             Scanner input = new Scanner(System.in);
             id = input.nextLine();
-            if (!Movie.moviesIdCheck.contains(id) && !Movie.rentalsIdCheck.contains(id) && !Movie.customersIdCheck.contains(id)) {
+            if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
                 this.id = id;
-                Movie.customersIdCheck.add(id);
+                Item.customersIdCheck.add(id);
                 let = false;
             } else {
                 System.out.println("This ID has already been taken");
@@ -57,15 +56,15 @@ public class Customer {
         return this.address;
     }
 
-    void getRentalMovies() {
+    void getRentalItems() {
         int count = 0;
-        if (rentalMovies.isEmpty()) {
+        if (rentalItems.isEmpty()) {
             System.out.println("The List is Empty!");
         } else {
-            for (int i = 0; i < rentalMovies.size(); i++) {
-                if (rentalMovies.get(i) != null) {
+            for (int i = 0; i < rentalItems.size(); i++) {
+                if (rentalItems.get(i) != null) {
                     count++;
-                    System.out.println(count + " " + rentalMovies.get(i).getAllInformation());
+                    System.out.println(count + " " + rentalItems.get(i).getAllInformation());
                 }
             }
         }

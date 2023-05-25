@@ -1,4 +1,3 @@
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -8,6 +7,8 @@ public class Rental extends RentalStore {
     private String id;
     private Customer customer;
     private Movie movie;
+    private Book book;
+    private Game game;
     private Date rentalDate;
     private Date returnDate;
 
@@ -17,9 +18,9 @@ public class Rental extends RentalStore {
         this.customer = customer;
         if (Movie.appendMovie) {
             while (true) {
-                if (!Movie.moviesIdCheck.contains(id) && !Movie.rentalsIdCheck.contains(id) && !Movie.customersIdCheck.contains(id)) {
+                if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
                     this.id = id;
-                    Movie.rentalsIdCheck.add(id);
+                    Item.rentalsIdCheck.add(id);
                     Movie.appendMovie = false;
                     let = true;
                     break;
@@ -31,9 +32,9 @@ public class Rental extends RentalStore {
             }
         } else {
             while (!let) {
-                if (!Movie.moviesIdCheck.contains(id) && !Movie.rentalsIdCheck.contains(id) && !Movie.customersIdCheck.contains(id)) {
+                if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
                     this.id = id;
-                    Movie.rentalsIdCheck.add(id);
+                    Item.rentalsIdCheck.add(id);
                     let = true;
                 } else {
                     System.out.println("This ID has already been taken");
@@ -46,8 +47,88 @@ public class Rental extends RentalStore {
         Date rentalDate = new Date();
         this.rentalDate = rentalDate;
         movie.setIsAvailable(true);
-        System.out.println("Thanks " + customer.getName() + " for borrowing " + movie.getTitle());
-        customer.rentalMovies.add(movie);
+        System.out.println("Thanks " + customer.getName() + " for borrowing " + movie.title);
+        customer.rentalItems.add(movie);
+        customer.rentals.add(this);
+    }
+
+    Rental(Game game, Customer customer, String id) {
+        boolean let = false;
+        this.game = game;
+        this.customer = customer;
+        if (Game.appendGame) {
+            while (true) {
+                if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
+                    this.id = id;
+                    Item.rentalsIdCheck.add(id);
+                    Game.appendGame = false;
+                    let = true;
+                    break;
+                } else {
+                    String x = "0";
+                    StringBuilder a = new StringBuilder(id);
+                    id = String.valueOf(a.append(x));
+                }
+            }
+        } else {
+            while (!let) {
+                if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
+                    this.id = id;
+                    Item.rentalsIdCheck.add(id);
+                    let = true;
+                } else {
+                    System.out.println("This ID has already been taken");
+                    System.out.print("Enter another ID : ");
+                    Scanner input = new Scanner(System.in);
+                    id = input.nextLine();
+                }
+            }
+        }
+        Date rentalDate = new Date();
+        this.rentalDate = rentalDate;
+        game.setIsAvailable(true);
+        System.out.println("Thanks " + customer.getName() + " for borrowing " + game.title);
+        customer.rentalItems.add(game);
+        customer.rentals.add(this);
+    }
+
+    Rental(Book book, Customer customer, String id) {
+        boolean let = false;
+        this.book = book;
+        this.customer = customer;
+        if (Book.appendBook) {
+            while (true) {
+                if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
+                    this.id = id;
+                    Item.rentalsIdCheck.add(id);
+                    Book.appendBook = false;
+                    let = true;
+                    break;
+                } else {
+                    String x = "0";
+                    StringBuilder a = new StringBuilder(id);
+                    id = String.valueOf(a.append(x));
+                }
+            }
+        } else {
+            while (!let) {
+                if (!Item.itemsIdCheck.contains(id) && !Item.rentalsIdCheck.contains(id) && !Item.customersIdCheck.contains(id)) {
+                    this.id = id;
+                    Item.rentalsIdCheck.add(id);
+                    let = true;
+                } else {
+                    System.out.println("This ID has already been taken");
+                    System.out.print("Enter another ID : ");
+                    Scanner input = new Scanner(System.in);
+                    id = input.nextLine();
+                }
+            }
+        }
+        Date rentalDate = new Date();
+        this.rentalDate = rentalDate;
+        book.setIsAvailable(true);
+        System.out.println("Thanks " + customer.getName() + " for borrowing " + book.title);
+        customer.rentalItems.add(book);
         customer.rentals.add(this);
     }
 
@@ -65,6 +146,22 @@ public class Rental extends RentalStore {
 
     String getMovieID() {
         return this.movie.getId();
+    }
+
+    String getGame() {
+        return this.game.getAllInformation();
+    }
+
+    String getGameID() {
+        return this.game.id;
+    }
+
+    String getBook() {
+        return this.book.getAllInformation();
+    }
+
+    String getBookID() {
+        return this.book.id;
     }
 
     Date getRentalDate() {
@@ -106,14 +203,39 @@ public class Rental extends RentalStore {
         return null;
     }
 
-    void calculateLateFee(Movie movie, Customer customer) {
-        if (!movies.contains(movie)) {
-            System.out.println("We don't have this movie!");
-        } else {
-            if (customer.rentalMovies.contains(movie)) {
-                movie.rentalFee(movie, customer, rentalDate);
+    void calculateLateFee(Item item, Customer customer) {
+        if (item instanceof Movie) {
+            Movie movie = (Movie) item;
+            if (!movies.contains(movie)) {
+                System.out.println("We don't have this movie!");
             } else {
-                System.out.println("You don't even have this movie");
+                if (customer.rentalItems.contains(movie)) {
+                    movie.rentalFee(item, customer, rentalDate);
+                } else {
+                    System.out.println("You don't even have this movie");
+                }
+            }
+        } else if (item instanceof Book) {
+            Book book = (Book) item;
+            if (!books.contains(book)) {
+                System.out.println("We don't have this book!");
+            } else {
+                if (customer.rentalItems.contains(book)) {
+                    book.rentalFee(item, customer, rentalDate);
+                } else {
+                    System.out.println("You don't even have this book");
+                }
+            }
+        } else if (item instanceof Game) {
+            Game game = (Game) item;
+            if (!games.contains(game)) {
+                System.out.println("We don't have this game");
+            } else {
+                if (customer.rentalItems.contains(game)) {
+                    game.rentalFee(item, customer, rentalDate);
+                } else {
+                    System.out.println("You don't even have this game");
+                }
             }
         }
     }
