@@ -1,69 +1,116 @@
 import java.util.ArrayList;
 import java.util.List;
-
-public class RentalStore {
-    static List<Customer> customers = new ArrayList<Customer>();
-    static List<Item> movies = new ArrayList<Item>();
-    static List<Book> books = new ArrayList<Book>();
-    static List<Game> games = new ArrayList<Game>();
-
-    void register(Customer customer) {
-        if (!customers.contains(customer)) {
-            customers.add(customer);
-            System.out.println("Thanks " + customer.getName() + " for joining");
-        } else {
-            System.out.println(customer.getName() + " You already have an account!");
+public  class RentalStore {
+    static List<Customer> allCustomers = new ArrayList<>();
+    static List<Movie> allMovies = new ArrayList<>();
+    static List<Book> allBooks = new ArrayList<>();
+    static List<Game> allGames = new ArrayList<>();
+    static public void add(Item item) {
+        if (item instanceof Movie movie) {
+            allMovies.add(movie);
+        } else if (item instanceof Book book) {
+            allBooks.add(book);
+        } else if (item instanceof Game game) {
+            allGames.add(game);
         }
     }
 
-    public void add(Item item) {
-        if (item instanceof Movie) {
-            Movie movie = (Movie) item;
-            movie.add(item);
-        } else if (item instanceof Book) {
-            Book book = (Book) item;
-            book.add(item);
-        } else if (item instanceof Game) {
-            Game game = (Game) item;
-            game.add(item);
+    static public void remove(Item item) {
+        if (item instanceof Movie movie) {
+            if (movie.getIsAvailable()) {
+                allMovies.remove(item);
+            }
+        }else if (item instanceof Book book) {
+            if (book.getIsAvailable()) {
+                allBooks.remove(item);
+            }
+        }else if (item instanceof Game game) {
+                    if (game.getIsAvailable()) {
+                        allGames.remove(item);
+                    }
+                }
+            }
+
+    static public void rentItem(Item item, Customer customer) {
+        if(allMovies.contains(item)){
+           for (int i=0;i<allMovies.size();i++) {
+             if (allMovies.get(i).getId() == item.getId()) {
+                 if(allMovies.get(i).isAvailable==true){
+                     int x = allMovies.get(i).id;
+                     int y = customer.getId();
+                     int z = Integer.valueOf(String.valueOf(x) + String.valueOf(y));
+                     Rental rental = new Rental((Movie) allMovies.get(i),customer, z);
+                     if(customer.rentals==null){
+                         customer.rentals =new ArrayList<>();
+                     }
+                     if(!customer.rentals.contains(item)){
+                         customer.rentals.add(allGames.get(i));
+                         System.out.println("Thanks " + customer.getName() + " for borrowing " + allBooks.get(i).title);
+                         allMovies.get(i).isAvailable=false;
+                     }else {
+                         System.out.println("You already have "+item.title);
+                     }
+                 }else {
+                     System.out.println(allMovies.get(i).title+" is borrowed by some one else");
+                 }
+                 }
         }
-    }
+         } else if (allBooks.contains(item)) {
+        for (int i = 0; i < allBooks.size(); i++) {
+            if (allBooks.get(i).id == item.id) {
+                if(allBooks.get(i).isAvailable==true){
+                    int x = allBooks.get(i).id;
+                    int y = customer.getId();
+                    int z = Integer.valueOf(String.valueOf(x) + String.valueOf(y));
+                    Rental rental = new Rental((Book) allBooks.get(i), customer, z);
+                    if(customer.rentals==null){
+                        customer.rentals =new ArrayList<>();
+                    }if(!customer.rentals.contains(item)){
+                        customer.rentals.add(allGames.get(i) );
+                        System.out.println("Thanks " + customer.getName() + " for borrowing " + allBooks.get(i).title);
+                        allBooks.get(i).isAvailable=false;
+                    }else {
+                        System.out.println("You already have "+item.title);
+                    }
 
-    void remove(Item item) {
-        if (item instanceof Movie) {
-            Movie movie = (Movie) item;
-            movie.remove(item);
-        } else if (item instanceof Book) {
-            Book book = (Book) item;
-            book.remove(item);
+                }else {
+                    System.out.println(allBooks.get(i).title+" is borrowed by some one else");
+                }
+                }
 
-        } else if (item instanceof Game) {
-            Game game = (Game) item;
-            game.remove(item);
-        }
-    }
-
-    void rentItem(Item item, Customer customer) {
-        if (item instanceof Movie) {
-            Movie movie = (Movie) item;
-            movie.rentMovie(movie, customer);
-        } else if (item instanceof Book) {
-            Book book = (Book) item;
-            book.rentBook(book, customer);
-        } else if (item instanceof Game) {
-            Game game = (Game) item;
-            game.rentGame(game, customer);
-        }
-    }
-
-    void getAvailableMovies() {
+            }
+        } else if (allGames.contains(item)) {
+              for (int i=0;i<allGames.size();i++){
+                   if(allGames.get(i).getId()==item.getId()){
+                       if(allGames.get(i).isAvailable==true){
+                           int x = allGames.get(i).id;
+                           int y = customer.getId();
+                           int z = Integer.valueOf(String.valueOf(x) + String.valueOf(y));
+                           Rental rental = new Rental((Game) allGames.get(i), customer, z);
+                           if(customer.rentals==null){
+                               customer.rentals =new ArrayList<>();
+                           } if(!customer.rentals.contains(allGames.get(i))){
+                               customer.rentals.add(allGames.get(i));
+                               System.out.println("Thanks " + customer.getName() + " for borrowing " + allGames.get(i).title);
+                               allGames.get(i).isAvailable=false;
+                           }else{
+                               System.out.println("You already have "+item.title);
+                           }
+                       }else {
+                           System.out.println(allGames.get(i).title+" is borrowed by some one else");
+                       }
+                       }
+             }
+              }
+            }
+    static public void getAvailableMovies() {
         int count = 0, k = 0;
-        for (int i = 0; i < movies.size(); i++) {
-            if (!movies.get(i).getIsAvailable()) {
+        for (int i = 0; i < allMovies.size(); i++) {
+            if (allMovies.get(i).getIsAvailable()) {
                 count++;
                 k++;
                 System.out.print(count + " ");
-                System.out.println(movies.get(i).getAllInformation());
+                System.out.println(allMovies.get(i).getAllInformation());
             }
         }
         if (k == 0) {
@@ -71,14 +118,14 @@ public class RentalStore {
         }
     }
 
-    void getAvailableGames() {
+    static public void getAvailableGames() {
         int count = 0, k = 0;
-        for (int i = 0; i < games.size(); i++) {
-            if (!games.get(i).getIsAvailable()) {
+        for (int i = 0; i < allGames.size(); i++) {
+            if (allGames.get(i).getIsAvailable()) {
                 count++;
                 k++;
                 System.out.print(count + " ");
-                System.out.println(games.get(i).getAllInformation());
+                System.out.println(allGames.get(i).getAllInformation());
             }
         }
         if (k == 0) {
@@ -86,14 +133,14 @@ public class RentalStore {
         }
     }
 
-    void getAvailableBooks() {
+    static public void getAvailableBooks() {
         int count = 0, k = 0;
-        for (int i = 0; i < books.size(); i++) {
-            if (!books.get(i).getIsAvailable()) {
-                count++;
+        for (int i = 0; i < allBooks.size(); i++) {
+            if (allBooks.get(i).getIsAvailable()) {
+               count++;
                 k++;
                 System.out.print(count + " ");
-                System.out.println(books.get(i).getAllInformation());
+                    System.out.println(allBooks.get(i).getAllInformation());
             }
         }
         if (k == 0) {
@@ -101,12 +148,12 @@ public class RentalStore {
         }
     }
 
-    void getCustomerById(String id) {
+    static public void getCustomerById(int id) {
         int k = 0;
-        for (int i = 0; i < customers.size(); i++) {
-            if (customers.get(i).getId().equals(id)) {
-                k++;
-                System.out.println(customers.get(i).getAllInformation());
+        for (int i = 0; i < allCustomers.size(); i++) {
+            if (allCustomers.get(i).getId()==(id)) {
+            //    k++;
+                System.out.println(allCustomers.get(i).getAllInformation());
                 break;
             }
         }
@@ -115,45 +162,37 @@ public class RentalStore {
         }
     }
 
-    void getById(String id) {
-        int k = 0;
-        for (int j = 0; j < Item.itemsIdCheck.size(); j++) {
-            if (Item.itemsIdCheck.get(j).equals(id)) {
-                k++;
-                for (int i = 0; i < movies.size(); i++) {
-                    if (movies.get(i).getId().equals(id)) {
-                        System.out.println(movies.get(i).getAllInformation());
-                        break;
-                    }
-                }
-                for (int i = 0; i < games.size(); i++) {
-                    if (games.get(i).getId().equals(id)) {
-                        System.out.println(games.get(i).getAllInformation());
-                        break;
-                    }
-                }
-                for (int i = 0; i < books.size(); i++) {
-                    if (books.get(i).getId().equals(id)) {
-                        System.out.println(books.get(i).getAllInformation());
-                        break;
-                    }
+    static public void getMovieByID(int id) {
+        for (int i = 0; i < allMovies.size(); i++) {
+            if (allMovies.get(i).getId() == id) {
+                System.out.println(allMovies.get(i).getAllInformation());
+                break;
+            }
+
+        }
+    }
+    static public void getBookById(int id){
+            for (int i=0;i<allBooks.size();i++){
+                if(allBooks.get(i).getId()==id){
+                    System.out.println(allBooks.get(i).getAllInformation());
+                    break;
                 }
             }
         }
-        if (k == 0) {
-            System.out.println("Nothing found!");
+    static public void getGameByID(int id){
+            for (int i=0;i<allGames.size();i++){
+                if(allGames.get(i).getId()==id){
+                    System.out.println(allGames.get(i).getAllInformation());
+                    break;
+                }
+            }
         }
-    }
-
-    void returnItem(Item item, Customer customer) {
-        if (item instanceof Movie) {
-            Movie movie = (Movie) item;
+    static public void returnItem(Item item, Customer customer) {
+        if (item instanceof Movie movie) {
             movie.returnMovie(movie, customer);
-        } else if (item instanceof Book) {
-            Book book = (Book) item;
+        } else if (item instanceof Book book) {
             book.returnBook(book, customer);
-        } else if (item instanceof Game) {
-            Game game = (Game) item;
+        } else if (item instanceof Game game) {
             game.returnGame(game, customer);
         }
     }
